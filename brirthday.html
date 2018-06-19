@@ -1,0 +1,21 @@
+<html>
+
+<head>
+
+</head>
+
+<body>
+    <script>
+        function bDayCount(m, n) {
+            var prob = 1;
+            for (var i = 0; i < n; i++) {
+                prob = ((m - i) / m) * prob;
+            }
+            return prob;
+        };
+        document.write(Math.floor(((1 - bDayCount(365, 44))*10000))/100+"%");
+    </script>
+
+</body>
+
+</html>

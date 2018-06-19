@@ -1,0 +1,145 @@
+<html>
+
+<head>
+</head>
+
+<body style="margin:0;padding:0;">
+    <canvas id="myCanvas"></canvas>
+    <script>
+        var myCanvas = document.getElementById("myCanvas");
+        var ctx = myCanvas.getContext("2d");
+        var sequence = 0;
+        //This代指“reverse”
+        var reversi = {//全局变量
+            outerSize: 0,//画布尺寸
+            size: 0,//棋盘尺寸
+            margin: 0,//棋盘边距
+            lineCount: 9,//棋盘行列数
+            cellSize: 0,//格子大小
+            status: [],
+            draw: function () {//画棋盘
+                if (myCanvas.width > myCanvas.height) {//取页面长宽的较小值作为尺寸
+                    this.outerSize = myCanvas.height;
+                }
+                else {
+                    this.outerSize = myCanvas.width;
+                }
+                this.margin = this.outerSize * 0.08;
+                this.size = this.outerSize - this.margin * 2;
+                this.cellSize = this.size / (this.lineCount - 1);
+                ctx.beginPath();
+                ctx.fillStyle = "#BDB76B";
+                ctx.fillRect(0, 0, this.outerSize, this.outerSize);
+                for (var i = 0; i < this.lineCount; i++) {
+                    ctx.moveTo(this.margin, this.margin + this.cellSize * i);
+                    ctx.lineTo(this.margin + this.size, this.margin + this.cellSize * i);
+                }
+                for (var i = 0; i < this.lineCount; i++) {
+                    ctx.moveTo(this.margin + this.cellSize * i, this.margin);
+                    ctx.lineTo(this.margin + this.cellSize * i, this.margin + this.size);
+                }
+
+                ctx.stroke();
+            },
+            init: function () {
+                for (var i = 0; i < this.lineCount - 1; i++) {
+                    var rowData = [];
+                    for (var j = 0; j < this.lineCount - 1; j++) {
+                        rowData.push(-1);
+                    }
+                    this.status.push(rowData);
+                }
+            },
+            check: function (row, col) {
+                var chessColor = sequence % 2;
+                var eatList = [];
+                for (var offsetX = -1; offsetX < 2; offsetX++) {
+                    for (var offsetY = -1; offsetY < 2; offsetY++) {
+                        if (offsetX != 0 || offsetY != 0) {
+                            var tmpRow = row + offsetY;
+                            var tmpCol = col + offsetX;
+                            var tmpList = [];
+                            while (tmpRow < reversi.lineCount - 1
+                                && tmpCol < reversi.lineCount - 1
+                                && tmpRow >= 0 && tmpCol >= 0
+                                && reversi.status[tmpRow][tmpCol] != chessColor
+                                && reversi.status[tmpRow][tmpCol] != -1) {
+                                tmpList.push({
+                                    row: tmpRow,
+                                    col: tmpCol
+                                });
+                                tmpRow = tmpRow + offsetY;
+                                tmpCol = tmpCol + offsetX;
+                            }
+                            if (tmpRow < reversi.lineCount - 1
+                                && tmpCol < reversi.lineCount - 1
+                                && tmpRow >= 0
+                                && tmpCol >= 0
+                                && reversi.status[tmpRow][tmpCol] == chessColor) {
+                                for (var i = 0; i < tmpList.length; i++) {
+                                    eatList.push(tmpList[i]);
+                                }
+                            }
+                        }
+                    }
+                }
+                for (var i = 0; i < eatList.length; i++) {
+                    reversi.status[eatList[i].row][eatList[i].col] = chessColor;
+                    this.drop(eatList[i].row, eatList[i].col, chessColor);
+                }
+                return eatList.length > 0;
+            },
+            drop: function (row, col, color) {
+                ctx.beginPath();
+                var startAngle = 0;
+                var endAngle = Math.PI * 2;
+                var x = col * reversi.cellSize + reversi.margin + reversi.cellSize * 0.5;
+                var y = row * reversi.cellSize + reversi.margin + reversi.cellSize * 0.5;
+                ctx.arc(x, y, reversi.cellSize * 0.4, startAngle, endAngle);
+                ctx.fillStyle = color == 0 ? "#000000" : "#ffffff";
+                ctx.fill();
+                this.status[row][col] = color;
+            }
+        };
+        reversi.init();
+        window.onresize = function () {
+            myCanvas.width = window.innerWidth;
+            myCanvas.height = window.innerHeight;
+            reversi.draw();
+
+            var row = Math.floor((reversi.lineCount - 1) / 2) - 1;
+            var col = row;
+            reversi.drop(row, col, 0);
+            reversi.drop(row, col + 1, 1);
+            reversi.drop(row + 1, col, 1);
+            reversi.drop(row + 1, col + 1, 0);
+        };
+        window.onresize();
+
+        window.addEventListener("mousedown", function (event) {
+            ctx.beginPath();
+            var startAngle = 0;
+            var endAngle = Math.PI * 2;
+            //根据鼠位置，先计算所在棋盘的行列，再计算落子的位置
+            var col = Math.floor((event.clientX - reversi.margin) / reversi.cellSize);
+            var x = col * reversi.cellSize + reversi.margin + reversi.cellSize * 0.5;
+            var row = Math.floor((event.clientY - reversi.margin) / reversi.cellSize);
+            var y = row * reversi.cellSize + reversi.margin + reversi.cellSize * 0.5;
+            if (col < reversi.lineCount - 1 && row < reversi.lineCount - 1 && col >= 0 && row >= 0) {
+                if (reversi.status[row][col] == -1) {
+                    if (reversi.check(row, col)) {
+                        var color = sequence % 2 == 0 ? "#000000" : "#ffffff";
+                        ctx.arc(x, y, reversi.cellSize * 0.4, startAngle, endAngle);
+                        ctx.fillStyle = color;
+                        ctx.fill();
+                        reversi.status[row][col] = sequence % 2;
+                        sequence = sequence + 1;
+                    }
+                }
+            }
+        });
+
+    </script>
+</body>
+
+</html>

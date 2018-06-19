@@ -1,0 +1,59 @@
+<html>
+
+<head>
+</head>
+
+<body>
+    <script>
+        var tmp = Number(prompt("number?"));
+        /*var sum = 0;
+        for (var i = 1; i <= 100; i++) {
+            sum = sum + i;
+        }
+        alert(sum);
+        function untittled(n) {
+            if (n == 1) {
+                return 1;
+            }
+            else {
+                return untittled(n - 1) + n;
+            }
+        }
+        alert(untittled(tmp));*/
+        function Hanoi(n) {
+            if (n == 1) {
+                return 1;
+            }
+            else {
+                return 2 * Hanoi(n - 1) + 1;
+            }
+
+        }
+        //var years = Hanoi(tmp) / 31556952;
+        alert(Hanoi(tmp) /*+ "/" + years*/);
+
+        var hanoi = [[], [], []];
+        for (var i = tmp; i > 0; i--) {
+            hanoi[0].push(i);
+        }
+        function move(count, where, dest) {
+            if (count == 1) {
+                var tower = hanoi[where];
+                hanoi[dest].push(tower[tower.length - 1]);
+                tower.splice(tower.length - 1, 1);
+                document.write(where + " to " + dest + "<br/>")
+                document.write("零柱子：" + hanoi[0] + "<br/>" + "壹柱子：" + hanoi[1] + "<br/>" + "贰柱子：" + hanoi[2] + "<br/><br/>");
+            }
+            else {
+                move(count - 1, where, 3 - where - dest);
+                move(1, where, dest);
+                move(count - 1, 3 - where - dest, dest);
+            }
+
+        }
+        document.write("欢迎使用汉诺塔攻略" + "," + "移动" + tmp + "片" + "," + "共" + Hanoi(tmp) + "步" + "<br/>")
+        move(tmp, 0, 2);
+    </script>
+</body>
+
+</html>

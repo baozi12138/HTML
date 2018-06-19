@@ -1,0 +1,125 @@
+<html>
+
+<head>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="5000" height="5000"></canvas>
+    <script>
+        var myCanvas = document.getElementById("myCanvas");
+        var ctx = myCanvas.getContext("2d");
+        /* ctx.beginPath();
+         ctx.moveTo(100, 100);
+         ctx.lineTo(200, 100);
+         ctx.lineTo(200, 200);
+         ctx.lineTo(100, 200);
+         ctx.lineTo(100, 100);
+         ctx.strokeStyle = "#FF0000";
+         ctx.lineWidth = 5;
+         ctx.stroke();
+         ctx.beginPath();
+         ctx.moveTo(500, 100);
+         ctx.lineTo(700, 100);
+         ctx.lineTo(700, 200);
+         ctx.lineTo(500, 200);
+         ctx.lineTo(500, 100);
+         ctx.strokeStyle = "#0000FF";
+         ctx.lineWidth = 10;
+         ctx.stroke();
+         ctx.strokeStyle = "#F0F0F0";
+         ctx.strokeStyle = 5;
+         ctx.strokeRect(100, 400, 120, 120);
+         ctx.beginPath();
+         var startAngle = 0;
+         var endAngle = Math.PI * 2;
+         ctx.arc(240, 180, 100, startAngle, endAngle);
+         ctx.lineWidth = 5;
+         ctx.strokeStyle = "#000000";
+         ctx.stroke();
+         ctx.beginPath();
+         var startAngle = 0;
+         var endAngle = Math.PI * 2 * 45 / 360;
+         ctx.arc(240, 180, 100, startAngle, endAngle);
+         ctx.lineWidth = 20;
+         ctx.strokeStyle = "#000F00";
+         ctx.stroke();
+         ctx.beginPath();
+         var startAngle = 0;
+         var endAngle = Math.PI * 2 * 45 / 360;
+         ctx.arc(240, 180, 100, startAngle, endAngle), true;
+         ctx.lineWidth = 20;
+         ctx.strokeStyle = "#000F00";
+         ctx.stroke();
+         ctx.beginPath();
+         var startAngle = 0;
+         var endAngle = Math.PI * 2;
+         ctx.arc(240, 180, 100, startAngle, endAngle, true);
+         ctx.fillStyle = "#FFFF00";
+         ctx.fill();
+         ctx.beginPath();
+         ctx.moveTo(240, 180);
+         ctx.lineTo(340, 180);
+         var startAngle = 0;
+         var endAngle = Math.PI * 2 * 90 / 360;
+         ctx.arc(240, 180, 100, startAngle, endAngle);
+         ctx.closePath();
+         ctx.fillStyle = "#FFFFFF";
+         ctx.fill();
+         ctx.beginPath();
+         var startAngle = 0;
+         var endAngle = Math.PI * 2 * 90 / 360;
+         ctx.arc(0, 0, 100, startAngle, endAngle);
+         ctx.fillStyle = "#0FF000";
+         ctx.stroke();
+        ctx.beginPath();
+        ctx.strokeStyle = "#0000FF";
+        ctx.lineWidth = 1;
+        ctx.moveTo(200, 100);
+        ctx.lineTo(500, 100);
+        var startAngle = -Math.PI / 2;
+        ctx.arc(500, 200, 100, startAngle,startAngle + Math.PI / 2);
+        //ctx.moveTo(600, 200);
+        ctx.lineTo(600, 500);
+        startAngle += Math.PI / 2;
+        ctx.arc(500, 500, 100, startAngle,startAngle + Math.PI / 2);
+        //ctx.moveTo(500, 600);
+        ctx.lineTo(200, 600);
+        startAngle += Math.PI / 2;
+        ctx.arc(200, 500, 100, startAngle,startAngle + Math.PI / 2);
+        //ctx.moveTo(100, 500);
+        ctx.lineTo(100, 200);
+        startAngle += Math.PI / 2;
+        ctx.arc(200, 200, 100, startAngle,startAngle + Math.PI / 2);
+        ctx.fill();
+        ctx.font="50px 'microsfot yahei'";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText("Hello",300,350);*/
+        ctx.beginPath();
+        ctx.fillStyle = "#a4ae06";
+        ctx.fillRect(100, 100, 360, 360);
+        for (var i = 0; i < 19; i++) {
+            ctx.moveTo(100, 100 + 20 * i);
+            ctx.lineTo(100 + 20 * 18, 100 + 20 * i);
+        }
+        for (var i = 0; i < 19; i++) {
+            ctx.moveTo(100 + 20 * i, 100);
+            ctx.lineTo(100 + 20 * i, 100 + 20 * 18);
+        }
+
+        ctx.stroke();
+        //function drawLine(i) {}
+        for (var i = 0; i < 3; i++) {
+            //drawLine(i);
+            for (var j = 0; j < 3; j++) {
+                ctx.beginPath();
+                ctx.fillStyle = "#000000";
+                ctx.arc(100 + 20 * 3 + j * 20 * 6, 100 + 20 * 3 + i * 20 * 6, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+
+    </script>
+</body>
+
+</html>

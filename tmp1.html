@@ -1,0 +1,44 @@
+<html>
+
+<head>
+</head>
+
+<body>
+    <canvas id="canvas" width="1000" height="1000"></canvas>
+    <script>
+        var myCanvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        /*var sum = 0;
+        for (var i = 1; i <= 100; i++){
+            sum =sum+i;
+        }
+        alert(sum);*/
+        /*function factorial(n){
+            if (n==1){
+                return 1;
+            }
+            else{
+                return factorial(n-1)*n;
+            }
+        }
+        alert(factorial(10));*/
+
+        function box(x, y, size) {
+            if (size > 1) {
+                for (var i = 0; i < 3; i = i + 1) {
+                    for (var j = 0; j < 3; j = j + 1) {
+                        if (i == 1 && j == 1) {
+                            ctx.fillRect(x + j * size, y + i * size, size, size);
+                        }
+                        else {
+                            box(x + j * size, y + i * size, size / 3);
+                        }
+                    }
+                }
+            }
+        }
+        box(0, 0, 1000);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,26 @@
+v hbnmnvfhgjvhjjkhckgjdhcgjhmcjhklhf<html>
+    <head>
+        <body>
+            </br>
+            </br>
+                <div>本金：<input id="Principal" type = "text"/></div>
+                <div>利率：<input id="Interest" type = "text"/></div> 
+                <div>存期：<input id="Period" type = "text"/></div>
+                <button id="btnOk" onclick="onOkClicked()">确定</button>
+                <div>你会得到：<span id="spanResult"></span></div>
+            <script>
+                function onOkClicked(){
+                    var principal =Number( document.getElementById("Principal").value);
+                    var interest =Number( document.getElementById("Interest").value);
+                    var period =Number( document.getElementById("Period").value);
+                    var spanResult = document.getElementById("spanResult");
+                    var result=principal; 
+                    for(var i=0;i<period;i++){
+                        result=result+result*interest;
+                    }
+                        spanResult.innerText = result;
+                    }
+            </script>
+        </body>
+    </head>
+</html>

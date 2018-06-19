@@ -1,0 +1,45 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <!--<img id="??" src="SB Rain.png"/>
+        <script>
+            var img = document.getElementById("??");
+            img.width=650;
+            img.height=500;
+        </script>
+            <div id="divCount"></div>
+        <script>
+            var text = "Hello World";
+            var divCount = document.getElementById("divCount");
+            divCount.innerText = text.length;
+        </script>
+        <div id="divDate"></div>
+        <script>
+            var date = new Date();
+            var divDate = document.getElementById("divDate");
+            divDate.innerText = date.getFullYear()+"/"+
+            (date.getMonth()+1)+"/"+ date.getDate();
+        </script>
+        <div id="divCurTime"></div>
+        <script>
+             function updateTime(){
+                 var curTime = document.getElementById("divCurTime")
+                 curTime.innerText = new Date();
+             }
+             setInterval(updateTime, 10);
+        </script>-->
+        <img id="image" src="hehehe.jpg">
+        <script>
+            var img =document.getElementById("image");
+            img.width =111;
+            var pid = -1;
+            function changeSize(){
+            img.width=img.width+10;
+            if(img.width >2000)clearInterval(pid);
+            }
+            pid= setInterval(changeSize,10);
+        </script>
+       
+    </body>
+</html>

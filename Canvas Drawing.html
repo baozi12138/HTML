@@ -1,0 +1,328 @@
+<html>
+
+<head>
+    <link href="jquery-ui.css" rel="stylesheet">
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+</head>
+
+<body>
+    <canvas id="canvas" width="480" height="360" style="margin: 0px; background-color:#ccc;"></canvas>
+    <canvas id="canvas2" width="480" height="360" style="display: none;"></canvas>
+    <div>
+        <button id="pen">Pen</button>
+        <button id="line">Line</button>
+        <button id="Rectangle">Rectangle</button>
+        <button id="Circle">circle</button>
+        <button id="Grayscale">Grayscale</button>
+        <button id="Negative">Negative</button>
+        <button id="Pixelate">Pixelate</button>
+        <button id="Blur">Blur</button>
+    </div>
+    <div>Color:<input id="color" type="text" value="#000000" />
+        <div id="slider1" style="width:200px;"></div>
+        </br>
+        <div id="slider2" style="width:200px;"></div>
+        </br>
+        <div id="slider3" style="width:200px;"></div>
+    </div>
+    </br>
+    <div>line width:<input id="Width" type="tet" value="10">
+        <div id="slider" style="width:200px;"></div>
+    </div>
+    </br>
+    <div> Pixelate:<input id="Pixelate" type="tet" value="0" />
+        <div id="slider4" style="width:200px;"></div>
+    </div>
+    <script src="external/jquery/jquery.js"></script>
+    <script src="jquery-ui.js"></script>
+    <script>
+        $("#slider").slider({
+            range: false,
+            change: function (event, ui) {
+                $("#Width").val(ui.value);
+            }
+            //values: [17, 67]
+        });
+
+        $("#slider1").slider({
+            range: false,
+            min: 0,
+            max: 255,
+
+            //values: [17, 67]
+        });
+
+        $("#slider2").slider({
+            range: false,
+            min: 0,
+            max: 255,
+            //values: [17, 67]
+        });
+
+        $("#slider3").slider({
+            range: false,
+            min: 0,
+            max: 255,
+            //values: [17, 67]
+        });
+
+        $("#slider4").slider({
+            range: false,
+            min: 1,
+            max: 30,
+        });
+
+
+
+
+        var mouseX = 0, mouseY = 0;
+        var lastMouseX = -1, lastMouseY = -1;
+        var mousePressed = false;
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        var canvas2 = document.getElementById("canvas2");
+        var ctx2 = canvas2.getContext("2d");
+        var currentTool = 0;
+        var canvasHeight = canvas.height;
+        var canvasWidth = canvas.width;
+
+
+        var btnPen = document.getElementById("pen");
+        btnPen.addEventListener("click", function () {
+            currentTool = 0
+        });
+
+        var btnLine = document.getElementById("line");
+        btnLine.addEventListener("click", function () {
+            currentTool = 1
+        });
+
+        var btnRectangle = document.getElementById("Rectangle");
+        btnRectangle.addEventListener("click", function () {
+            currentTool = 2
+        });
+
+        var btnCircle = document.getElementById("Circle");
+        btnCircle.addEventListener("click", function () {
+            currentTool = 3
+        });
+
+        var btnGrayscale = document.getElementById("Grayscale");
+        btnGrayscale.addEventListener("click", function () {
+            var imageData = ctx2.getImageData(0, 0, canvas.width, canvas.height)
+            for (i = 0; i < imageData.data.length; i = i + 4) {
+                var avg = (imageData.data[i] + imageData.data[i + 1] + imageData.data[i + 2]) / 3;
+                imageData.data[i] = avg;
+                imageData.data[i + 1] = avg;
+                imageData.data[i + 2] = avg;
+                //imageData.data[i + 3] = 255;
+            }
+            ctx2.putImageData(imageData, 0, 0);
+        });
+
+        var btnNegative = document.getElementById("Negative");
+        btnNegative.addEventListener("click", function () {
+            var imageData = ctx2.getImageData(0, 0, canvas.width, canvas.height)
+            for (i = 0; i < imageData.data.length; i = i + 4) {
+                imageData.data[i] = 255 - imageData.data[i];
+                imageData.data[i + 1] = 255 - imageData.data[i + 1];
+                imageData.data[i + 2] = 255 - imageData.data[i + 2];
+            }
+            ctx2.putImageData(imageData, 0, 0);
+        });
+
+        var btnPixelate = document.getElementById("Pixelate");
+        btnPixelate.addEventListener("click", function () {
+            var resolution = $("#slider4").slider("value");
+            var imageData = ctx2.getImageData(0, 0, canvas.width, canvas.height)
+            for (var i = 0; i < imageData.height; i = i + resolution) {
+                for (var j = 0; j < imageData.width; j = j + resolution) {
+                    var position = i * canvasWidth * 4 + j * 4;
+                    var avgR = 0, avgG = 0, avgB = 0;
+                    for (var offsetI = 0; offsetI < resolution; offsetI++) {
+                        for (var offsetJ = 0; offsetJ < resolution; offsetJ++) {
+                            var idx = (i + offsetI) * canvasWidth * 4 + (j + offsetJ) * 4;
+                            avgR = avgR + imageData.data[idx];
+                            avgG = avgG + imageData.data[idx + 1];
+                            avgB = avgB + imageData.data[idx + 2];
+                        }
+                    }
+                    avgR = avgR / (resolution * resolution);
+                    avgG = avgG / (resolution * resolution);
+                    avgB = avgB / (resolution * resolution);
+
+                    for (offsetI = 0; offsetI < resolution; offsetI++) {
+                        for (offsetJ = 0; offsetJ < resolution; offsetJ++) {
+                            var idx = (i + offsetI) * canvasWidth * 4 + (j + offsetJ) * 4;
+                            imageData.data[idx] = avgR;
+                            imageData.data[idx + 1] = avgG;
+                            imageData.data[idx + 2] = avgB;
+                        }
+                    }
+                }
+            }
+            ctx2.putImageData(imageData, 0, 0);
+        });
+
+        var btnBlur = document.getElementById("Blur");
+        btnBlur.addEventListener("click", function () {
+            var resolution = 5;//$("#slider4").slider("value");
+            var imageData = ctx2.getImageData(0, 0, canvas.width, canvas.height)
+            var tmpData = [];
+            for (var i = 0; i < imageData.height; i++) {
+                for (var j = 0; j < imageData.width; j++) {
+                    var position = i * canvasWidth * 4 + j * 4;
+                    var avgR = 0, avgG = 0, avgB = 0, avgA = 0;
+                    var count= 0;
+                    for (var offsetI = -resolution; offsetI < resolution; offsetI++) {
+                        for (var offsetJ = -resolution; offsetJ < resolution; offsetJ++) {
+                            var idx = (i + offsetI) * canvasWidth * 4 + (j + offsetJ) * 4;
+                            if (i + offsetI >= 0 && i + offsetI < canvasHeight) {
+                                if (j + offsetJ >= 0 && j + offsetJ < canvasWidth) {
+                                    avgR = avgR + imageData.data[idx];
+                                    count =count+1;
+                                    avgG = avgG + imageData.data[idx + 1];
+                                    avgB = avgB + imageData.data[idx + 2];
+                                    avgA = avgA + imageData.data[idx + 3];
+                                }
+
+                            }
+
+                        }
+                    }
+                    avgR = avgR / count;
+                    avgG = avgG / count;
+                    avgB = avgB / count;
+                    avgA = avgA / count;
+
+
+                    tmpData.push(avgR);
+                    tmpData.push(avgG);
+                    tmpData.push(avgB);
+                    tmpData.push(avgA);
+                }
+
+            }
+            for (var i = 0; i < imageData.data.length; i++) {
+                imageData.data[i] = tmpData[i];
+            }
+            ctx2.putImageData(imageData, 0, 0);
+
+        });
+
+
+        window.addEventListener("mousemove", function (event) {
+            if (mousePressed && currentTool == 0) {
+                lastMouseX = mouseX;
+                lastMouseY = mouseY;
+            }
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+        });
+
+        window.setInterval(function () {
+            //"rgb(255,255,255)"
+            var colorValue = "rgb" + "(" + $("#slider1").slider("value") + "," + $("#slider2").slider("value") + "," + $("#slider3").slider("value") + ")";//document.getElementById("color").value;
+            var widthValue = $("#slider").slider("value"); //document.getElementById("Width").value;
+            ctx.strokeStyle = colorValue;
+            ctx2.strokeStyle = colorValue;
+            ctx.fillStyle = colorValue;
+            ctx2.fillStyle = colorValue;
+            ctx.lineWidth = widthValue;
+            ctx2.lineWidth = widthValue;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.font = "20px 'microsoft yahei'";
+            ctx.font = "20px 'microsoft yahei'";
+            ctx.fillText("鼠标在浏览器窗口中的坐标: " + mouseX + ", " + mouseY, 20, 20);
+            ctx.drawImage(canvas2, 0, 0);
+            ctx.beginPath();
+
+            if (mousePressed == true && lastMouseX >= 0) {
+                if (currentTool == 0) {
+                    ctx2.beginPath();
+                    ctx2.moveTo(lastMouseX, lastMouseY);
+                    ctx2.lineTo(mouseX, mouseY);
+                    ctx2.lineCap = "round";
+                    ctx2.stroke();
+                }
+                if (currentTool == 1) {
+                    ctx.beginPath();
+                    ctx.moveTo(lastMouseX, lastMouseY);
+                    ctx.lineTo(mouseX, mouseY);
+                    ctx.lineCap = "round";
+                    ctx.stroke();
+                }
+                if (currentTool == 2) {
+                    ctx.beginPath();
+                    ctx.strokeRect(lastMouseX, lastMouseY, mouseX - lastMouseX, mouseY - lastMouseY);
+
+                }
+
+                if (currentTool == 3) {
+                    ctx.beginPath();
+                    var startAngle = 0;
+                    var endAngle = Math.PI * 2;
+                    var radius = 0;
+                    if (mouseX - lastMouseX > mouseY - lastMouseY) {
+                        radius = (mouseX - lastMouseX) / 2;
+                    }
+                    if (mouseY - lastMouseY > mouseX - lastMouseX) {
+                        radius = (mouseY - lastMouseY) / 2;
+                    }
+                    ctx.arc(lastMouseX + radius, lastMouseY + radius, radius, startAngle, endAngle);
+                    ctx.stroke();
+
+                }
+            };
+        }, 10);
+
+        window.addEventListener("mousedown", function (event) {
+            mousePressed = true;
+            lastMouseX = mouseX;
+            lastMouseY = mouseY;
+        });
+
+        window.addEventListener("mouseup", function (event) {
+            mousePressed = false;
+            if (currentTool == 1) {
+                ctx2.beginPath();
+                ctx2.moveTo(lastMouseX, lastMouseY);
+                ctx2.lineTo(mouseX, mouseY);
+                ctx2.lineCap = "round";
+                ctx2.stroke();
+                lastMouseX = -1;
+                lastMouseY = -1;
+            }
+            if (currentTool == 2) {
+                ctx2.beginPath();
+                ctx2.strokeRect(lastMouseX, lastMouseY, mouseX - lastMouseX, mouseY - lastMouseY);
+                lastMouseX = -1;
+                lastMouseY = -1;
+
+            }
+            if (currentTool == 3) {
+                ctx2.beginPath();
+                var startAngle = 0;
+                var endAngle = Math.PI * 2;
+                var radius = 0;
+                if (mouseX - lastMouseX > mouseY - lastMouseY) {
+                    radius = (mouseX - lastMouseX) / 2;
+                }
+                if (mouseY - lastMouseY > mouseX - lastMouseX) {
+                    radius = (mouseY - lastMouseY) / 2;
+                }
+                ctx2.arc(lastMouseX + radius, lastMouseY + radius, radius, startAngle, endAngle);
+                ctx2.stroke();
+            }
+        });
+        var img = new Image();
+        img.src = "timg-1.jpeg";
+        img.onload = function () {
+            ctx2.drawImage(img, 0, 0, canvasWidth, canvasHeight)
+        };
+    </script>
+
+
+</body>
+
+</html>

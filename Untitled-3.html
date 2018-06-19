@@ -1,0 +1,36 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <canvas id="myCanvas" width="1000" height="500"></canvas>
+        <script>
+        var myCanvas = document.getElementById("myCanvas");
+        var ctx = myCanvas.getContext("2d");
+        var vx=0; var vy=0;
+        var x = 0, y = 0;
+        var avy=0.5;
+        window.addEventListener("keydown", function (event) {
+            if (event.keyCode == 38) vy=-10 ;
+        });
+
+        var img = new Image();
+        img.src = "basketball.svg";
+        img.onload = function () {
+            var x = 0, y = 400;
+            window.setInterval(function () {
+                ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+                ctx.drawImage(img, x, y);
+                x=x+vx;
+                y=y+vy;
+                vy=vy+avy
+                if (y>=400){
+                    y=400;
+                }
+                
+              
+            }, 10);
+        }
+        
+        </script> 
+    </body>
+</html>

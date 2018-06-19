@@ -1,0 +1,58 @@
+<html>
+
+<head>
+</head>
+
+<body>
+    <canvas id="canvas" width="1000" height="1000"></canvas>
+    <script>
+        var myCanvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        /*var sum = 0;
+        for (var i = 1; i <= 100; i++){
+            sum =sum+i;
+        }
+        alert(sum);*/
+        /*function factorial(n){
+            if (n==1){
+                return 1;
+            }
+            else{
+                return factorial(n-1)*n;
+            }
+        }
+        alert(factorial(10));*/
+
+        function box(x, y, size, lv) {
+            if (size > 1) {
+                for (var i = 0; i < 3; i = i + 1) {
+                    for (var j = 0; j < 3; j = j + 1) {
+                        if (i == 1 && j == 1) {
+                            var r = Math.floor(Math.random() * 255);
+                            var g = Math.floor(Math.random() * 255);
+                            var b = Math.floor(Math.random() * 255);
+                            ctx.beginPath();
+                            ctx.fillStyle = "RGB(" + r + "," + g + "," + b + ")";
+                            if (lv % 2 == 1)
+                                ctx.fillRect(x + j * size, y + i * size, size, size);
+                                
+                            else {
+                                var startAngle = 0;
+                                var endAngle = Math.PI * 2;
+                                ctx.arc(x + j * size + size / 2, y + i * size + size / 2, size / 2, startAngle, endAngle);
+                                ctx.fill();
+                            }
+
+                        }
+                        else {
+                            box(x + j * size, y + i * size, size / 3, lv + 1);
+                        }
+                    }
+                }
+            }
+        }
+        box(0, 0, 1000, 0);
+    </script>
+</body>
+
+</html>

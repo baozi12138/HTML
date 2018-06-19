@@ -1,0 +1,23 @@
+<html>
+
+<head>
+
+</head>
+
+<body>
+    <script>
+        var PokerType = ["红桃", "黑桃", "方块", "梅花"];
+        var PokerNumber = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K",];
+
+        function PokerList(color, point) {
+            for (var i = 0; i < color; i++) {
+                for (var j = 0; j < point; j++) {
+                    document.write(PokerType[i] + PokerNumber[j] + "<br>")
+                }
+            }
+        }
+        PokerList(4, 13);
+    </script>
+</body>
+
+</html>

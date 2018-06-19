@@ -1,0 +1,22 @@
+<html>
+
+<head>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="1000" height="1000"></canvas>
+    <script>
+        ctx.beginPath();
+        ctx.moveTo(240, 180);
+        ctx.lineTo(340, 180);
+        var startAngle = 0;
+        var endAngle = Math.PI * 2 * 90 / 360;
+        ctx.arc(0, 0, 100, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = "#0000FF";
+        ctx.fill();
+
+    </script>
+</body>
+
+</html>

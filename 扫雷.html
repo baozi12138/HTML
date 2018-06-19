@@ -1,0 +1,236 @@
+<html>
+
+<head>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="1000" height="650" style="border:1px solid #000000;"></canvas>
+    <script>
+        if (window.Event)
+            document.captureEvents(Event.MOUSEUP);
+
+        function nocontextmenu() {
+            event.cancelBubble = true
+            event.returnvalue = false;
+            return false;
+        }
+
+        function norightclick(e) {
+            if (window.Event) {
+                if (e.which == 2 || e.which == 3)
+                    return false;
+            }
+            else if (event.button == 2 || event.button == 3) {
+                event.cancelBubble = true
+                event.returnvalue = false;
+                return false;
+            }
+        }
+        document.oncontextmenu = nocontextmenu;  // for IE5+ 
+        document.onmousedown = norightclick;  // 
+
+
+        //初始化...
+        var myCanvas = document.getElementById("myCanvas");//得到canvas的对象
+        var ctx = myCanvas.getContext("2d");//得到canvas的上下文(画笔)
+        var mineMatrix = [];//创建地雷阵数组
+        var mineMatrixStatus = [];//创建地雷阵状态数组（0=未翻开， 1=翻开了，2=标记了）
+        var rowCount = 20;//行数
+        var columnCount = 35;//列数
+        var mineCount = 80;//地雷数量
+        var baseX = 25;//基准点x
+        var baseY = 25;//基准点y
+        var end = 0;//游戏结束
+        var openCount = 0;
+        var plugIn = 0;
+        var startTime = new Date().getTime();
+        var endTime = startTime;
+
+        //初始化空白的的地雷阵...
+        for (var i = 0; i < rowCount; i++) {
+            var row = [];
+            var row2 = [];
+            for (var j = 0; j < columnCount; j++) {
+                row.push(0);
+                row2.push(0);
+            }
+            mineMatrix.push(row);
+            mineMatrixStatus.push(row2);
+        }
+
+        //随机初始化地雷...
+        var i = 0;
+        while (i < mineCount) {
+            var row = Math.floor(Math.random() * rowCount);
+            var column = Math.floor(Math.random() * columnCount);
+            if (mineMatrix[row][column] != "*") {
+                i++;
+                mineMatrix[row][column] = "*";
+            }
+        }
+        //计算指定单元格周围地雷数量
+        function calMineCountOfCell(row, column) {
+            var count = 0;
+            for (var offsetX = -1; offsetX < 2; offsetX++) {//搜索附近的九宫格（x）
+                for (var offsetY = -1; offsetY < 2; offsetY++) {//同上（y）
+                    if (offsetX != 0 || offsetY != 0) { //搜索附近“九宫格”时排除本体
+                        if (row + offsetY >= 0 && row + offsetY < rowCount) {//解决超出边界范围的方块（y）
+                            if (column + offsetX >= 0 && column + offsetX < columnCount) {//同上（x）
+                                if (mineMatrix[row + offsetY][column + offsetX] == "*") {//是否有地雷，并且将地雷数加一
+                                    count++;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return count;
+        }
+
+        for (var i = 0; i < rowCount; i++) {
+            for (var j = 0; j < columnCount; j++) {
+                if (mineMatrix[i][j] != "*") {
+                    mineMatrix[i][j] = calMineCountOfCell(i, j);
+                }
+            }
+        }
+
+        function search(row, column) {
+            var seeds = [];
+            var seed = 0;
+            seeds.push({ x: column, y: row });
+            while (seeds.length > 0) {
+                seed = seeds[0];
+                seeds.splice(0, 1);
+                for (var offsetX = -1; offsetX < 2; offsetX++) {
+                    for (var offsetY = -1; offsetY < 2; offsetY++) {
+                        if (offsetX != 0 || offsetY != 0) {
+                            if (seed.y + offsetY >= 0 && seed.y + offsetY < rowCount) {
+                                if (seed.x + offsetX >= 0 && seed.x + offsetX < columnCount) {
+                                    if (mineMatrix[seed.y + offsetY][seed.x + offsetX] != "*" && mineMatrixStatus[seed.y + offsetY][seed.x + offsetX] == 0) {
+                                        mineMatrixStatus[seed.y + offsetY][seed.x + offsetX] = 1;
+                                        openCount++;
+                                        if (mineMatrix[seed.y + offsetY][seed.x + offsetX] == 0) {
+                                            seeds.push({ x: seed.x + offsetX, y: seed.y + offsetY });
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function draw() {
+            //初始化图形样式
+            ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+            ctx.beginPath();
+            ctx.fillStyle = "#555555";
+            ctx.font = "20px 'microsfot yahei'";
+
+            //绘制地雷阵
+            for (var i = 0; i < rowCount; i++) {
+                for (var j = 0; j < columnCount; j++) {
+                    ctx.strokeRect(baseX + j * 25, baseY + i * 25, 20, 20);
+                    ctx.fillStyle = "#777777";
+                    if (mineMatrixStatus[i][j] == 1) {
+                        if (mineMatrix[i][j] == "*") {
+                            ctx.fillText("⎈", baseX + 0 + j * 25, baseY + 18 + i * 25);
+
+                        }
+                        else if (mineMatrix[i][j] != "0") {
+                            ctx.fillText(mineMatrix[i][j], baseX + 5 + j * 25, baseY + 18 + i * 25);
+                        }
+                    }
+                    else {
+                        if (plugIn) {
+                            if (mineMatrix[i][j] == "*") {
+                                ctx.fillText("⎈", baseX + 0 + j * 25, baseY + 18 + i * 25);
+                            }
+                        }
+                        else {
+                            ctx.fillRect(baseX + j * 25, baseY + i * 25, 20, 20);
+                            if (mineMatrixStatus[i][j] == 2) {
+
+                                ctx.fillStyle = "#BBBBBB";
+                                ctx.fillText("⚑", baseX + 5 + j * 25, baseY + 17 + i * 25);
+                            }
+                        }
+                    }
+
+                }
+            }
+            if (end == 1) {
+                ctx.fillStyle = "#FF0000";
+                ctx.font = "100px 'microsfot yahei'";
+                var textSize = ctx.measureText("GAME OVER");
+                ctx.fillText("GAME OVER", (myCanvas.width - textSize.width) / 2, (myCanvas.height - 100) / 2);
+            }
+            if (openCount == (rowCount * columnCount) - mineCount) {
+                ctx.fillStyle = "#00FF00";
+                ctx.font = "100px 'microsfot yahei'";
+                var textSize = ctx.measureText("VICTORY");
+                ctx.fillText("VICTORY", (myCanvas.width - textSize.width) / 2, (myCanvas.height - 100) / 2);
+            }
+
+            if (!(end || openCount == (rowCount * columnCount) - mineCount)) {
+                endTime = new Date().getTime();
+            }
+            ctx.font = "20px 'microsfot yahei'";
+            ctx.fillText((endt - startTime) / 1000, 20, 20);
+        }
+
+        setInterval(draw, 100);
+        //draw();
+
+        var keyStatus = {};
+        window.addEventListener("keydown", function (event) {
+            keyStatus[event.keyCode + ""] = true;
+            //alert(event.keyCode);
+            plugIn = keyStatus["91"] && keyStatus["32"];
+            draw();
+            //alert(event.keyCode);
+        });
+
+        window.addEventListener("keyup", function (event) {
+            keyStatus[event.keyCode + ""] = false;
+
+            plugIn = keyStatus["91"] && keyStatus["32"];
+            draw();
+        });
+
+        //检测玩家是否按下鼠标
+        myCanvas.addEventListener("mousedown", function (event) {
+            var mouseX = event.clientX;
+            var mouseY = event.clientY;
+            var row = Math.floor((mouseY - baseY - myCanvas.offsetTop) / 25);
+            var column = Math.floor((mouseX - baseX - myCanvas.offsetLeft) / 25);
+            if (event.button == 0) {
+                if (mineMatrixStatus[row][column] == 0) {
+                    mineMatrixStatus[row][column] = 1;
+                    if (mineMatrix[row][column] == "*") {
+                        end = 1;
+                    }
+                    else {
+                        openCount++;
+                    }
+                    if (mineMatrix[row][column] == 0) {
+                        search(row, column);
+                    }
+                }
+
+            }
+            else if (event.button == 2) {
+                if (mineMatrixStatus[row][column] == 0)
+                    mineMatrixStatus[row][column] = 2;
+
+            }
+
+
+            draw();
+        });
+    </script>
+</body>
+
+</html>

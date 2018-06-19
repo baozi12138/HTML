@@ -1,0 +1,111 @@
+<html>
+
+<head>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="1024" height="500"></canvas>
+    <canvas id="myCanvas2" width="1024" height="500" style="display: none;"></canvas>
+    <script>
+        var pathX = [], pathY = [];
+        var myCanvas = document.getElementById("myCanvas");
+        var ctx = myCanvas.getContext("2d");
+        var myCanvas2 = document.getElementById("myCanvas2");
+        var ctx2 = myCanvas2.getContext("2d");
+        var x = 0, y = 0;
+        var vx = 1, vy = 0;
+        var snakeLength = 100;
+        var img = new Image();
+        var bananaX = Math.random() * 900;
+        var bananaY = Math.random() * 400;
+        var point = 0;
+
+        window.addEventListener("keydown", function (event) {
+            if (event.keyCode == 37) {
+                vx = -2, vy = 0;
+            };
+            if (event.keyCode == 38) {
+                vx = 0, vy = -2;
+            };
+            if (event.keyCode == 39) {
+                vx = 2, vy = 0;
+            };
+            if (event.keyCode == 40) {
+                vx = vx = 0, vy = 2;
+            };
+        });
+
+        function gameloop() {
+            ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+            if (x > 1024 || x < 0 || y > 500 || y < 0) {
+                ctx.font = "50px 'microsfot yahei'";
+                ctx.fillText("Gameover", 512, 250);
+                return;
+            };
+
+
+            for (i = 0; i < pathX.length - 1; i++) {
+                if (x == pathX[i] && y == pathY[i]) {
+                    ctx.font = "50px 'microsfot yahei'";
+                    ctx.fillText("Gameover", 512, 250);
+                    return;
+                };
+            };
+            ctx2.beginPath();
+            ctx2.moveTo(x, y);
+
+            x = x + vx, y = y + vy;
+            pathX.push(x);
+            pathY.push(y);
+
+            ctx2.lineTo(x, y);
+            ctx2.lineCap = "round";
+            ctx2.strokeStyle = "#0000FF";
+            ctx2.lineWidth = 15;
+            ctx2.stroke();
+            if (pathX.length > snakeLength) {
+                ctx2.beginPath();
+                ctx2.moveTo(pathX[0], pathY[0]);
+                pathX.splice(0, 1);
+                pathY.splice(0, 1);
+                ctx2.lineTo(pathX[0], pathY[0]);
+                ctx2.strokeStyle = "#FFFFFF";
+                ctx2.lineWidth = 18;
+                ctx2.stroke();
+            }
+            if (x >= bananaX & x <= bananaX + img.width & y >= bananaY & y <= bananaY + img.height) {
+                bananaX = Math.random() * 900;
+                bananaY = Math.random() * 400;
+                snakeLength = snakeLength + 25;
+                point = point + 10;
+            }
+
+
+            ctx.drawImage(myCanvas2, 0, 0);
+            ctx.beginPath();
+            var startAngle = 0;
+            var endAngle = Math.PI * 2;
+            ctx.arc(x, y, 15, startAngle, endAngle, true);
+            ctx.fillStyle = "#0000FF";
+            ctx.fill();
+            ctx.drawImage(img, bananaX, bananaY);
+
+            ctx.strokeStyle = "#0000FF";
+            ctx.strokeWidth = 30;
+            ctx.strokeRect(0, 0, 1024, 500);
+            
+            ctx.font = "30px 'microsfot yahei'";
+            ctx.fillText(point,950, 50);
+
+
+        }
+
+
+        img.src = "bananas.svg";
+        img.onload = function () {
+            window.setInterval(gameloop, 20);
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,68 @@
+<html>
+
+<head>
+
+</head>
+
+<body>
+    <script>
+        /*function permutation(n, m) {
+            var fact = 1;
+            for (var i = 0; i < n; i++) {
+                fact = fact * (m - i);
+            }
+            return fact;
+        }
+        document.write(permutation(4, 5));
+        //function combination(n, m) {
+            return permutation(n, m) / permutation(n, n);
+        }
+        document.write(combination(2, 5));
+        //var set = ["A", "B", "C", "D"];*/
+        function permutation1(n, set, path) {
+            if (n == 0) {
+                //document.write(path + "<br>");
+            }
+            else {
+                for (var i = 0; i < set.length; i++) {
+                    var tmpSet = [];
+                    for (var j = 0; j < set.length; j++) {
+                        tmpSet.push(set[j]);
+                    }
+                    tmpSet.splice(i, 1);
+                    permutation1(n - 1, tmpSet, path + set[i])
+                }
+            }
+
+        }
+
+        var set = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K","L"];
+        function permutation2(n, lv) {
+            if (n > lv) {
+                for (var i = lv; i < set.length; i++) {
+                    var tmp = set[lv];
+                    set[lv] = set[i];
+                    set[i] = tmp;
+                    permutation2(n, lv + 1);
+                    tmp = set[lv];
+                    set[lv] = set[i];
+                    set[i] = tmp;
+                }
+            }
+            if (lv == n) {
+                return;
+                //document.write(lv + "," + n + ":");
+                for (var j = 0; j < n; j++) {
+                    document.write(set[j])
+                }
+                document.write("<br>")
+            }
+        }
+        document.write(new Date() + "<br>");
+        permutation2(12, 0);
+       // permutation1(12, ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K","L"], "");
+        document.write(new Date() + "<br>");
+    </script>
+</body>
+
+</html>
